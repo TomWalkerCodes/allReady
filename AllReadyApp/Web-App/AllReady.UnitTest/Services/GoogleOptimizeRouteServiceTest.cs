@@ -14,10 +14,10 @@ namespace AllReady.UnitTest.Services
     public class GoogleOptimizeRouteServiceTest : InMemoryContextTest
     {
         private const string EncodedStartAddress = "252 Dundas St, London, ON N6A 1H3";
-        private const string EncodedEndAddress = "1750 Crumlin Road, London, ON N5V 3B6";
+        private const string EncodedEndAddress = "501 Wilkins St, London, ON N6C 5G2";
 
         [Fact]
-        public async Task GetOptimizeRouteResult() { 
+        public async Task GetOptimizeRouteResult() {
             var mSettings = new MappingSettings();
             // get key from https://developers.google.com/maps/documentation/directions/get-api-key
             mSettings.GoogleDirectionsApiKey = "AIzaSyAKxawFmQcX_NNjfbgRUajdZeGM0Yu_nDE";
@@ -30,14 +30,15 @@ namespace AllReady.UnitTest.Services
             var gService = new GoogleOptimizeRouteService(mapSettings.Object, logger);
 
             var wayPoints = new List<OptimizeRouteWaypoint>();
-            var wPoint = new OptimizeRouteWaypoint(-81.2293342, 43.003086, Guid.NewGuid());
+            
+            var wPoint = new OptimizeRouteWaypoint(-81.231493, 42.963281, Guid.NewGuid());
             wayPoints.Add(wPoint);
             OptimizeRouteCriteria criteria = new OptimizeRouteCriteria(EncodedStartAddress, EncodedEndAddress, wayPoints);
 
             var oResult = await gService.OptimizeRoute(criteria);
 
-            Assert.True(oResult.Duration > 800);
-            Assert.True(oResult.Distance > 10000);
+            Assert.True(oResult.Duration > 300);
+            Assert.True(oResult.Distance > 3000);
         }
     }
 }
