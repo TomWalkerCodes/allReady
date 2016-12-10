@@ -17,27 +17,27 @@ namespace AllReady.UnitTest.Services
         private const string EncodedEndAddress = "1750 Crumlin Road, London, ON N5V 3B6";
 
         [Fact]
-        public void GetOptimizeRouteResult() {  //async Task
+        public async Task GetOptimizeRouteResult() { 
+            var mSettings = new MappingSettings();
+            // get key from https://developers.google.com/maps/documentation/directions/get-api-key
+            mSettings.GoogleDirectionsApiKey = "AIzaSyAKxawFmQcX_NNjfbgRUajdZeGM0Yu_nDE";
+
             var mapSettings = new Mock<IOptions<MappingSettings>>();
+            mapSettings.Setup(x => x.Value).Returns(mSettings);
+
             var logger = Mock.Of<ILogger<GoogleOptimizeRouteService>>();
 
             var gService = new GoogleOptimizeRouteService(mapSettings.Object, logger);
 
-            //var requests = await Context.ItineraryRequests
-            //    .Include(rec => rec.Request)
-            //    .Include(rec => rec.Itinerary).ThenInclude(i => i.StartLocation)
-            //    .Include(rec => rec.Itinerary).ThenInclude(i => i.EndLocation)
-            //    .Where(rec => rec.ItineraryId == message.ItineraryId)
-            //    .ToListAsync();
             var wayPoints = new List<OptimizeRouteWaypoint>();
+            var wPoint = new OptimizeRouteWaypoint(-81.2293342, 43.003086, Guid.NewGuid());
+            wayPoints.Add(wPoint);
             OptimizeRouteCriteria criteria = new OptimizeRouteCriteria(EncodedStartAddress, EncodedEndAddress, wayPoints);
 
-            bool isOK = true;
-            Assert.True(isOK);
-            //var oResult = await gService.OptimizeRoute(criteria);
+            var oResult = await gService.OptimizeRoute(criteria);
 
-            //Assert.True(oResult.Duration > 0);
-            //Assert.True(oResult.Distance > 10000);
+            Assert.True(oResult.Duration > 800);
+            Assert.True(oResult.Distance > 10000);
         }
     }
 }
